@@ -1,0 +1,38 @@
+﻿3 ulike brukerstatuser: 
+GUEST/NORMAL: 
+- Må ha en mulighet til å registrere seg (via form)
+- Skal få en oversikt over artiklene (summaries) 
+- Skal kunne klikke på en artikkel for å lese den 
+- Skal kunne gi rating til en artikkel 
+- Skal kunne velge måten artiklene blir vist på.
+	- Enten kronologisk eller popularitet (høyest rating) 
+	- Bruk cookies for å huske dette til neste gang 
+- Skal kunne foreta et boolean search i artiklene 
+
+REGISTRERT skal i tillegg kunne: 
+- Logge inn 
+- Poste nyhetsartikler 
+- Redigere eller slette sine egne artikler 
+- Oppdatere sin registreringsdata (inkludert passord) 
+
+ADMIN skal i tillegg kunne: 
+- Slette brukere 
+- Legge til eller slette nyhetskategorier
+- Slette hvilken som helst artikkel 
+- Få en summary (en liste som presenterer antall views under hver kategori)
+
+NOTATER: 
+- You should add indexes to your tables as necessary.
+- It is sufficient to combine search keywords only with the ‘AND’ operator.
+- You should use cookies to keep track of users’ preferences for topic ordering.
+- You should use hashing to protect passwords.
+- You should sanitise the user input and make a simple check against empty fields.
+- Provide a ‘setup.php’ file to create the database
+
+
+Sanitise user input: 
+function fix_string(string){
+	// convert all special chars. to htmlentities 
+	$str = htmlentitites($string)
+	return $str;
+}

@@ -1,0 +1,166 @@
+.logo {
+	text-align: center;
+	text-transform: uppercase;
+}
+
+body {
+	font-family: 'Open Sans', sans-serif;
+}
+
+img {
+	max-width: 100%;
+}
+
+.login_link, .register_link, .profile_link {
+	display: block;
+}
+
+.read_more_button{
+	text-transform: uppercase;
+	border-radius: 4px;
+	font-size: 12px;
+	/*color: black;*/
+	transition: all 200ms;
+	/*font-weight: 700;*/
+	top: -5px;
+	position: relative;
+}
+
+.read_more_button span {
+	font-size: 16px;
+}
+
+.read_more_button:hover {
+	text-decoration: none;
+	/*transition: all 200ms;*/
+}
+
+.error {
+	color: red;
+}
+
+#index .article_list {
+	margin-top: -50px;
+}
+
+#index .article_wrapper{
+	margin-bottom: 50px;
+}
+
+#index .article_wrapper .summary {
+	padding-top: 10px;
+	padding-bottom: 0px;
+}
+
+#article img {
+	margin-bottom: 10px;
+}
+
+#register input {
+	width: 48%;
+	padding: 5px;
+	margin-bottom: 5px;
+}
+
+#register input[type="submit"] {
+	width: 48%;
+	padding: 5px;
+	margin-bottom: 5px;
+	margin: 0 auto;
+}
+
+#profile .info_text {
+	text-align: center;
+}
+
+#profile h3 {
+	font-size: 20px;
+	cursor: pointer;
+}
+
+#profile label {
+	margin-right: 20px;
+}
+
+#profile input, #profile select {
+	display: block;
+}
+
+#profile select {
+	padding: 2.25px;
+}
+
+#profile input[type=file]{
+	color: transparent;
+	max-width: 60px;
+	margin-top: 2px;
+}
+
+#profile h5 {
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+#profile textarea {
+	display: block;
+	width: 100%;
+}
+
+#profile .summary_textarea {
+	height: 300px;
+	max-height: 50px;
+}
+
+#profile .article_textarea {
+	height: 300px;
+	max-height: 300px;
+}
+
+#profile .new_article input[type=submit]{
+	margin-top: 10px;
+}
+
+#profile #toggle_new_article, #profile .new_article, #profile #toggle_edit_account, #profile .edit_account {
+	margin: 0;
+	background-color: #f1f1f1;
+}
+
+#profile #toggle_new_article, #profile #toggle_article_list, #profile #toggle_edit_account {
+	padding: 10px 20px 10px 20px;
+}
+
+#profile .new_article, #profile .article_list, #profile .edit_account {
+	padding: 20px;
+	display: none;
+}
+
+#profile #toggle_article_list, #profile .article_list {
+	margin: 0;
+	background-color: #f9f9f9;
+}
+
+#profile .article_wrapper {
+	width: 100%;
+}
+
+#profile .article_wrapper h4{
+	display: inline-block;
+	max-width: 78%;
+	margin-top: 10px;
+	margin-left: 2%;
+	font-size: 20px;
+}
+
+#profile .article_wrapper img {
+	max-width: 18%;
+	float: left;
+}
+
+#profile .article_wrapper .summary {
+	clear: both;
+	margin-top: 10px;
+}
+
+#profile .article_wrapper hr {
+	border-top: 1px solid #b7b2b2;
+}

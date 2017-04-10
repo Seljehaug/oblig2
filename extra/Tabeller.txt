@@ -1,0 +1,8 @@
+﻿Article
+article_id, author_id, title, category, published (date, timestamp), summary, text, image_url
+
+User
+user_id, firstname, lastname
+
+Admin
+admin_id (PK and FK referencing user_id) 
