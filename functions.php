@@ -4,8 +4,6 @@ function get_post($var){
 	$var = stripslashes($_POST[$var]);
 	$var = htmlentities($var);
 	$var = strip_tags($var);
-	// Do not need this because of PDO prepared statement
-	// $var = $conn->real_escape_string($var);
 	return $var;
 }
 
@@ -35,4 +33,59 @@ function validate_password($password) {
 	if (!preg_match("/[A-Z]/", $password))
 		$msg .= "<p class='error'>Password should include at least one uppercase letter.</p>";
 	return $msg;
+}
+
+// Retrieves the articles stored in the database
+// Returns an assoc array containing all data about each article 
+function get_articles($db){
+	$query = "SELECT a.*, u.*
+		FROM articles a, users u
+		WHERE a.author_id = u.user_id";
+
+	$stmnt = $db->prepare($query);
+	if (!$stmnt->execute(array()))
+		die('Query failed:' . $db->errorInfo()[2]);
+
+	$result = $stmnt->fetchAll(PDO::FETCH_OBJ);
+	$article_list = array();
+	foreach ($result as $article) {
+		$article_list[] = array("article_id" => $article->article_id, "author_id" => $article->author_id, "title" => $article->title,
+		"category_id" => $article->category_id, "published" => $article->published, "summary" => $article->summary,
+		"full_text" => $article->full_text, "img_url" => $article->img_url);
+	}
+	return $article_list;
+}
+
+// Retrieves the admins stored in the database
+// Returns an assoc array containing id and usernaem for all admins
+function get_admins($db){
+	$query = "SELECT u.*, a.*
+		FROM users u, admins a
+		WHERE u.user_id = a.admin_id";
+
+	$stmnt = $db->prepare($query);
+	if (!$stmnt->execute(array()))
+		die('Query failed:' . $db->errorInfo()[2]);
+
+	$result = $stmnt->fetchAll(PDO::FETCH_OBJ);
+	$admin_list = array();
+	foreach ($result as $admin) {
+		$admin_list[] = array("user_id" => $admin->user_id, "username" => $admin->username);
+	}
+	return $admin_list;
+}
+
+// Retrieves the categories stored in the database and returns an assoc array with the category names
+function get_categories($db){
+	$query = "SELECT * FROM categories";
+	$stmnt = $db->prepare ($query);
+	if (!$stmnt->execute (array())){
+		die('Query failed:' . $db->errorInfo()[2]);
+	}
+	$result = $stmnt->fetchAll(PDO::FETCH_OBJ);
+	$category_list = array();
+	foreach ($result as $category) {
+		$category_list[] = array("category_id" => $category->category_id, "category" => $category->category);
+	}
+	return $category_list;
 }

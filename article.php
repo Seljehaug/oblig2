@@ -20,14 +20,19 @@ File: article.php -->
             <div class="col-md-6 col-md-offset-3 article_list">
                <a href="index.php"><h1 class="logo">Online Newspaper</h1></a>
 					<?php
+               session_start();
+               echo "<pre>";
+               print_r($_SESSION);
+               echo "</pre>";
+
 					// Establish connection to the database
-					include_once("connect.php");
+					require_once("connect.php");
 
 					// Select the database
-					$query = 'USE online_newspaper_db';
-					if ($db->exec($query)===false){
-						die('Can not select db:' . $db->errorInfo()[2]);
-					}
+					// $query = 'USE online_newspaper_db';
+					// if ($db->exec($query)===false){
+					// 	die('Can not select db:' . $db->errorInfo()[2]);
+					// }
 
                // Retrieve the article_id
                $article_id = $_GET['id'];

@@ -11,3 +11,9 @@ try {
 } catch(PDOException  $e) {
 	die ("Could not connect: ".$e->getMessage());
 }
+
+// Select the database
+$query = 'USE online_newspaper_db';
+if ($db->exec($query)===false){
+	die('Can not select db:' . $db->errorInfo()[2]);
+}

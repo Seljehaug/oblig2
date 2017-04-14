@@ -23,6 +23,8 @@ File: index.php -->
                <a class="register_link" href="register.php">Register</a>
                <?php
                session_start();
+               require_once("connect.php");
+               require_once("functions.php");
 
                // If user is logged in, show profile and logout links
                if(isset($_SESSION['isloggedin'])){?>
@@ -35,29 +37,45 @@ File: index.php -->
          <div class="row">
             <div class="col-md-6 col-md-offset-3 article_list">
 
+               <div class="sortBy">
+                  <p>
+                     Sort by:
+                     <a href="index.php?sort=date">Date</a>
+                     <a href="index.php?sort=rating">Rating</a>
+                  </p>
+               </div>
+
 					<?php
-					include_once("connect.php");
                print_r($_SESSION);
 
-					// Select the database
-					$query = 'USE online_newspaper_db';
-					if ($db->exec($query)===false){
-						die('Can not select db:' . $db->errorInfo()[2]);
-					}
+               // Default query (sort by date)
+               $sql= "SELECT a.*, u.*
+               FROM articles a, users u
+               WHERE a.author_id = u.user_id
+               ORDER BY published DESC";
 
-               // User is logged in
-               if(isset($_SESSION['isloggedin'])){
-                  echo "LOGGED IN";
-                  // DO STUFF ONLY FOR LOGGED IN USERS
-                  // ADD NEW ARTICLE
-                  // EDIT
-                  // DELETE
+               // If user has clicked on a type of sorting
+               if(isset($_GET['sort'])){
+                  // Change query to sort by date
+                  if( $_GET['sort'] == 'date'){
+                     $sql= "SELECT a.*, u.*
+                     FROM articles a, users u
+                     WHERE a.author_id = u.user_id
+                     ORDER BY published DESC";
+                  }
+                  // Change query to sort by rating
+                  // ---------------------------------------
+                  //MUST BE MODIFED, CURRENTLY SORTS BY TITLE
+                  // ---------------------------------------
+                  if( $_GET['sort'] == 'rating'){
+                     $sql= "SELECT a.*, u.*
+                     FROM articles a, users u
+                     WHERE a.author_id = u.user_id
+                     ORDER BY title";
+                  }
                }
-
-					// Select all articles
-					$sql= "SELECT * FROM articles";
-					$stmt = $db->query($sql);
-					$rows = $stmt->fetchAll(PDO::FETCH_OBJ);
+               $stmnt = $db->query($sql);
+               $rows = $stmnt->fetchAll(PDO::FETCH_OBJ);
 
 					// Display articles to the browser
 					foreach ($rows as $row) { ?>
@@ -65,6 +83,7 @@ File: index.php -->
 							<h2><?=htmlspecialchars_decode($row->title)?></h2>
 							<img src="<?=htmlspecialchars_decode($row->img_url)?>">
 							<p class="summary"><?=htmlspecialchars($row->summary)?></p>
+                     <p><?=htmlspecialchars($row->published)?></p>
 							<a class="read_more_button" href="article.php?id=<?=$row->article_id?>">Read more <span>&#187;</span></a>
 						</div> <!-- End of article_wrapper -->
 					<?php } ?>
@@ -74,8 +93,3 @@ File: index.php -->
 		</div> <!-- End of container -->
 	</body>
 </html>
-
-	<?php
-	// close the connection
-	$db = null;
-	?>

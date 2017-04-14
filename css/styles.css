@@ -1,3 +1,4 @@
+/* ------------ GENERAL STYLING --------------------- */
 .logo {
 	text-align: center;
 	text-transform: uppercase;
@@ -38,6 +39,18 @@ img {
 .error {
 	color: red;
 }
+.success{
+	color: #00cb4b;
+}
+
+input[type="text"], input[type="password"], input[type="submit"], textarea {
+	padding: 5px;
+}
+
+select {
+	padding: 6.5px;
+}
+/* ------------- INDEX PAGE -----------------------------*/
 
 #index .article_list {
 	margin-top: -50px;
@@ -52,9 +65,13 @@ img {
 	padding-bottom: 0px;
 }
 
+/* -------------- ARTICLE PAGE ----------------------- */
+
 #article img {
 	margin-bottom: 10px;
 }
+
+/* ------------- REGISTER PAGE ---------------------- */
 
 #register input {
 	width: 48%;
@@ -69,13 +86,17 @@ img {
 	margin: 0 auto;
 }
 
+/* --------------- PROFLE PAGE --------------------*/
+
 #profile .info_text {
 	text-align: center;
 }
 
 #profile h3 {
-	font-size: 20px;
-	cursor: pointer;
+	text-transform: uppercase;
+	color: black;
+	border-bottom: 2px solid;
+	padding-bottom: 5px;
 }
 
 #profile label {
@@ -84,10 +105,6 @@ img {
 
 #profile input, #profile select {
 	display: block;
-}
-
-#profile select {
-	padding: 2.25px;
 }
 
 #profile input[type=file]{
@@ -120,25 +137,6 @@ img {
 	margin-top: 10px;
 }
 
-#profile #toggle_new_article, #profile .new_article, #profile #toggle_edit_account, #profile .edit_account {
-	margin: 0;
-	background-color: #f1f1f1;
-}
-
-#profile #toggle_new_article, #profile #toggle_article_list, #profile #toggle_edit_account {
-	padding: 10px 20px 10px 20px;
-}
-
-#profile .new_article, #profile .article_list, #profile .edit_account {
-	padding: 20px;
-	display: none;
-}
-
-#profile #toggle_article_list, #profile .article_list {
-	margin: 0;
-	background-color: #f9f9f9;
-}
-
 #profile .article_wrapper {
 	width: 100%;
 }
@@ -163,4 +161,39 @@ img {
 
 #profile .article_wrapper hr {
 	border-top: 1px solid #b7b2b2;
+}
+
+#profile .delete_article {
+	display: inline-block;
+}
+
+#profile .delete_article input {
+	border: none;
+	color: red;
+	background: none;
+}
+
+#profile .edit_account label input {
+	padding: 5px;
+}
+/* -------------- EDIT ARTICLE PAGE ----------------- */
+#edit_article label, #edit_article input[type="submit"], #edit_article select {
+	display: block;
+}
+#edit_article textarea, #edit_article input[type="text"] {
+	display: block;
+	width: 100%;
+}
+
+#edit_article .full_text {
+	height: 500px;
+}
+
+#edit_article img {
+	width: 20%;
+	margin: 10px 0 10px 0;
+}
+
+#edit_article .article_wrapper {
+	margin-bottom: 20px;
 }

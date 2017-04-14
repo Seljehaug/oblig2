@@ -37,14 +37,13 @@ File: register.php -->
 					<?php
 					// Establish connection
 					require_once("connect.php");
-
                require_once("functions.php");
 
 					// Select the database
-					$query = 'USE online_newspaper_db';
-					if ($db->exec($query)===false){
-						die('Can not select db:' . $db->errorInfo()[2]);
-					}
+					// $query = 'USE online_newspaper_db';
+					// if ($db->exec($query)===false){
+					// 	die('Can not select db:' . $db->errorInfo()[2]);
+					// }
 
 					// When user clicks submit, retrieve sanitized input fields and insert into database
 					if(isset($_POST['submit'])){
@@ -109,7 +108,9 @@ File: register.php -->
                      }
                      else {
                         echo "<p>You have been successfully registered!</p>";
-
+                        // Retrieves the user id, which is then used to redirect to login page
+                        // GET variable is used to send user id to login page in order to give
+                        // a confirmation message for first time users (newly registered users)
                         $query = "SELECT user_id FROM users WHERE username = ?";
                         $stmnt = $db->prepare($query);
 
@@ -119,51 +120,12 @@ File: register.php -->
                         $result = $stmnt->fetch(PDO::FETCH_OBJ);
                         $user_id = $result->user_id;
 
-                        // Send user to
-                        // $_POST['reg'] = "success";
+                        // Send user to login
                         header("Location: login.php?id=$user_id&reg=success");
+                        die();
                      }
                   }
-
                }
-
-					// Sanitize input
-					// function get_post($var){
-					// 	$var = stripslashes($_POST[$var]);
-					// 	$var = htmlentities($var);
-					// 	$var = strip_tags($var);
-					// 	// Do not need this because of PDO prepared statement
-					// 	// $var = $conn->real_escape_string($var);
-					// 	return $var;
-					// }
-
-               // Validation of username. Checks that username is between 5 and 15 characters,
-               // Also checks that characters only include letters, numbers and '_'
-               // Returns appropriate message, empty if everything is fine.
-               // function validate_username($username) {
-               //    $msg = "";
-               //    if (!preg_match("/^.{5,15}$/", $username)){
-               //       $msg .= "<p class='error'>User name should be between 5-15 characters.</p>";
-               //    }
-               //    if (preg_match("/[^\w]/", $username)){
-               //       $msg .= "<p class='error'>Username should only include letters, numbers and '_'.</p>";
-               //    }
-               //    return $msg;
-               // }
-
-               // // Validation of password. Checks that password contains a minimum of 5 characters.
-               // // Also checks that password contains at least one uppercase and lowercase letter
-               // // Returns appropriate message, empty if fine.
-               // function validate_password($password) {
-               // 	$msg = "";
-               // 	if (!preg_match("/^.{5,}$/", $password))
-               // 		$msg .= "<p class='error'>Password should be minimum of 5 characters.</p>";
-               // 	if (!preg_match("/[a-z]/", $password))
-               // 		$msg .= "<p class='error'>Password should include at least one lowercase letter.</p>";
-               // 	if (!preg_match("/[A-Z]/", $password))
-               // 		$msg .= "<p class='error'>Password should include at least one uppercase letter.</p>";
-               // 	return $msg;
-               // }
 					?>
 
 				</div> <!-- End of column -->

@@ -20,6 +20,11 @@ File: profile.php -->
    require_once("connect.php");
    require_once("functions.php");
 
+   // Select the database
+   // $query = 'USE online_newspaper_db';
+   // if ($db->exec($query)===false){
+   //    die('Can not select db:' . $db->errorInfo()[2]);
+   // }
    echo "<pre>";
    print_r($_SESSION);
    echo "</pre>";
@@ -32,6 +37,11 @@ File: profile.php -->
 
    // Variable used to give feedback to user
    $msg = "";
+
+   echo '<pre>';
+   var_dump($_SESSION);
+   // print_r($_POST);
+   echo '</pre>';
 
    // Retrieve all information about the user that's stored in the database
    $query= "SELECT a.*, u.*
@@ -56,17 +66,19 @@ File: profile.php -->
       $summary = get_post('new_summary');
       $category = $_POST['new_category'];
       $full_text = $_POST['new_full_text'];
+      // $user_id retreived SESSION variable earlier
       $author_id = $user_id;
       $img_url = "";
 
-      // Loop through assoc array for categories and get category_id that corresponds to the chosen category
+      // Loop through assoc array for categories and get
+      // category_id that corresponds to the chosen category
       for ($i=0; $i < count($category_list); $i++) {
          if($category_list[$i]['category'] == $category){
             $category_id = $category_list[$i]['category_id'];
          }
       }
 
-      // Check if user uploaded a (img) file
+      // Check if file has been uploaded
       if (isset($_FILES["new_img"]["name"])) {
          $name = $_FILES["new_img"]["name"];
          $tmp_name = $_FILES['new_img']['tmp_name'];
@@ -82,7 +94,8 @@ File: profile.php -->
                echo "<p class='error'>Sorry, only JPG, JPEG, PNG & GIF files are allowed.</p>";
             }
             // File is ok
-            else{ // Move the file to the images folder
+            else{
+               // Move the file to the images folder
                move_uploaded_file($tmp_name, $location.$name);
                $img_url = $location.$name;
             }
@@ -91,6 +104,7 @@ File: profile.php -->
 
       // Check if any of the required fields are empty
       foreach($_POST as $var=>$value) {
+         // If empty, give error message
          if(empty($_POST[$var])) {
             $msg .= "<p class='error'>Please fill out all required fields</p>";
          break;
@@ -104,48 +118,36 @@ File: profile.php -->
          $query = $db->prepare($sql);
          $query->execute($article);
          $msg = "<p class='success'>Success: Article added";
-         // Refresh page (not optimal since msg will not be shown on update)
          header("Location: profile.php");
          die();
       }
    }
 
    // If user clicks on delete article
-   if(isset($_POST['delete_article'])){
-      // Get the article id
-      if(isset($_POST['delete_article_id'])){
-         $article_id = $_POST['delete_article_id'];
-      }
-      // Delete article
-      $query= "DELETE FROM articles
-         WHERE article_id = ?";
-      $stmnt = $db->prepare($query);
-      if (!$stmnt->execute(array($article_id))){
-         die('Query failed:' . $db->errorInfo()[2]);
-      }
-      $msg = "<p class='success'>Success: Article deleted";
-      // Refresh page (not optimal since msg will not be shown on update)
-      header("Location: profile.php");
-      die();
-   }
+   // if(isset($_POST['delete'])){
+   //    echo "HEEELOOO".$article_id;
+   //    $query= "DELETE FROM articles
+   //       WHERE article_id = ?";
+   //
+   //    $stmnt = $db->prepare($query);
+   //    if (!$stmnt->execute(array($article_id))){
+   //       die('Query failed:' . $db->errorInfo()[2]);
+   //    }
+   //    // header("Location: profile.php");
+   //    // die();
+   //    echo "<p class'success'>Success: Article deleted</p>";
+   // }
 
    // If user has confirmed changes to account details
    if(isset($_POST['edit_account'])){
-      // Get sanitized input values
       $edit_firstname = get_post('edit_firstname');
       $edit_lastname = get_post('edit_lastname');
+      $edit_username = get_post('edit_username');
       $current_password = get_post('current_password');
       $new_password = get_post('new_password');
       $confirmed_password = get_post('confirmed_password');
-      $msg = "";
 
-      // Get user
-      $query = "SELECT * FROM users WHERE user_id = ?";
-      $stmnt = $db->prepare($query);
-      if(!$stmnt->execute(array($user_id))){
-         die("Query Failed: " . $db->errorInfo()[2]);
-      }
-      $user = $stmnt->fetch(PDO::FETCH_OBJ);
+      $msg = "";
 
       // Check that all fields have been filled in
       foreach($_POST as $var=>$value) {
@@ -155,8 +157,28 @@ File: profile.php -->
          }
       }
 
+      /* Did not have time to implement change of username
+      // Check edit username input for length and characters
+      $msg .= validate_username($edit_username);
+
+      $query = "SELECT * FROM users WHERE username = ?";
+      $stmnt = $db->prepare($query);
+      if(!$stmnt->execute(array($edit_username))){
+         die("Query Failed: " . $db->errorInfo()[2]);
+      }
+
+      // Get user
+      $result = $stmnt->fetch(PDO::FETCH_OBJ);
+      // Username already in database
+      if($result){
+         // if username is the user's current username - ignore it
+         if($result->username != $username){
+            $msg .= "<p class='error'>Username already taken</p>";
+         }
+      }*/
+
       // Check input for current password up against the database
-      if(!password_verify($current_password, $user->password)){
+      if(!password_verify($current_password, $result->password)){
          $msg .= "<p class='error'>Your current password input is incorrect</p>";
       }
 
@@ -165,26 +187,25 @@ File: profile.php -->
 
       // Check that the new password and confirmed new password match
       if($new_password != $confirmed_password){
-         $msg .= "<p class='error'>New password and confirmed password do not match</p>";
+         $msg .= "<p class='error'>Your passwords do not match</p>";
       }
-
       // Hash the new password before inserting into database
       $new_password = password_hash($new_password, PASSWORD_DEFAULT);
 
       // If everything is ok, update the user information stored in users table in db
       if($msg==""){
-         $user = array($user_id, $edit_firstname, $edit_lastname, $new_password, $user_id);
-         $sql = "UPDATE users SET user_id=?, firstname=?, lastname=?, password=? WHERE user_id=?";
+         $user = array($user_id, $edit_firstname, $edit_lastname, $edit_username, $new_password, $user_id);
+         $sql = "UPDATE users SET user_id=?, firstname=?, lastname=?, username=?, password=? WHERE user_id=?";
          $query = $db->prepare($sql);
          $query->execute($user);
+         $msg .= "<p class='success'>Success: User details updated.</p>";
          // Update session parameters
          $_SESSION['firstname'] = $edit_firstname;
          $_SESSION['lastname'] = $edit_lastname;
-         $msg .= "<p class='success'>Success: User details updated.</p>";
-         // Refresh page (not optimal since msg will not be shown on update)
-         header("Location: profile.php");
-         die();
+         $_SESSION['username'] = $edit_username;
       }
+      echo $msg;
+      // ERROR WHEN UPDATING USERNAME BECAUSE THERE IS NO USER WITH THAT USERNAME, MUST INSET A NEW USER AND DELETE OLD ONE
    }
    ?>
 
@@ -199,12 +220,13 @@ File: profile.php -->
          </div> <!-- End of row -->
 
          <div class="row">
-            <div class="col-md-6">
-               <!-- ADD NEW ARTICLE -->
-               <div class="new_article">
+            <div class="col-md-12">
+
+               <!-- Add new article -->
+               <div class="col-md-6 new_article">
                   <!-- Adding new article -->
    					<h3>Add New Article</h3>
-                  <p><?php if (isset($_POST['new_article_submit'])){echo $msg;}?></p>
+                  <p><?=$msg?></p>
 						<form class="new_article_form" action="profile.php" method="POST" enctype="multipart/form-data">
 							<label for="new_title">Title*
 								<input type="text" name="new_title" value="<?php if(isset($_POST['new_title'])){echo $_POST['new_title'];}?>">
@@ -228,41 +250,14 @@ File: profile.php -->
 						</form>
    				</div> <!-- End of new_article -->
 
-               <!-- EDIT ACCOUNT -->
-               <div class="edit_account">
-                  <!-- Change Password -->
-                  <h3>Edit Account Details</h3>
-                  <p>Edit your account details by changing the fields below:</p>
-                  <p><?php if (isset($_POST['edit_account'])){echo $msg;}?></p>
-                  <form action="profile.php" method="post">
-                     <label for="edit_firstname">First name:
-                        <input type="text" name="edit_firstname" placeholder="First name" value="<?php if(isset($_POST['edit_firstname'])){echo $_POST['edit_firstname'];}else{echo $firstname;}?>">
-                     </label>
-                     <label for="edit_lastname">Last name:
-                        <input type="text" name="edit_lastname" placeholder="Last name" value="<?php if(isset($_POST['edit_lastname'])){echo $_POST['edit_lastname'];}else{echo $lastname;}?>">
-                     </label>
-                     <label for="current_password">Current Password:
-                        <input type="password" name="current_password">
-                     </label>
-                     <label for="new_password">New Password:
-                        <input type="password" name="new_password">
-                     </label>
-                     <label for="confirmed_password">Confirm New Password:
-                        <input type="password" name="confirmed_password">
-                     </label>
-                     <input type="submit" name="edit_account" value="Confirm">
-                  </form>
-               </div> <!-- End of edit_account -->
-            </div> <!-- End of col-md-6 -->
-
-            <div class="col-md-6">
-               <!-- ARTICLE MANAGEMENT -->
-               <div class="article_management">
+               <!-- Article list -->
+               <div class="col-md-6 article_management">
+                  <!-- ARTICLE MANAGEMENT -->
    					<h3>Your articles</h3>
-                  <p><?php if (isset($_POST['delete'])){echo $msg;}?></p>
    					<div class='article_list'>
 
    					<?php
+                  // Need this when deleting article
                   $article_id = "";
                   // Display articles to the browser
    					foreach ($article_list as $article) { ?>
@@ -275,8 +270,7 @@ File: profile.php -->
    								<a href="edit_article.php?id=<?=$article->article_id?>">Edit</a>
                            <form class="delete_article" action="profile.php" method="POST" onsubmit="return confirm('Are you sure you want to delete this article?');">
                               <?php $article_id = $article->article_id?>
-                              <input type="hidden" name="delete_article_id" value="<?=$article_id?>">
-                              <input type="submit" name="delete_article" value="Delete">
+                              <input type="submit" name="delete" value="Delete">
                            </form>
    							</div>
    							<hr>
@@ -286,9 +280,38 @@ File: profile.php -->
 						?>
                   </div> <!-- End of article_list -->
                </div> <!-- End of article_management -->
-            </div> <!-- End of column md-6 -->
+            </div> <!-- End of column md-12 -->
+         </div> <!-- End of row -->
+
+         <div class="row">
+            <div class="col-md-6 edit_account">
+            <!-- Change Password -->
+				<h3>Edit Account Data</h3>
+				<p>Edit your account details by changing the fields below:</p>
+				<form action="profile.php" method="post">
+					<h5>Edit name:</h5>
+					<!-- <label for="change_firstname">First name:</label> -->
+					<input type="text" name="edit_firstname" placeholder="First name" value="<?php if(isset($_POST['edit_firstname'])){echo $_POST['edit_firstname'];}else{echo $firstname;}?>">
+					<!-- <label for="change_lastname">Last name:</label> -->
+					<input type="text" name="edit_lastname" placeholder="Last name" value="<?php if(isset($_POST['edit_lastname'])){echo $_POST['edit_lastname'];}else{echo $lastname;}?>">
+					<label for="change_username">Edit username</label>
+					<input type="text" name="edit_username" placeholder="New username" value="<?php if(isset($_POST['edit_username'])){echo $_POST['edit_username'];}else{echo $username;}?>">
+					<label for="current_password">Current Password:
+						<input type="password" name="current_password">
+					</label>
+					<label for="new_password">New Password:
+						<input type="password" name="new_password">
+					</label>
+               <label for="confirmed_password">Confirm New Password:
+						<input type="password" name="confirmed_password">
+					</label>
+					<input type="submit" name="edit_account" value="Confirm">
+
+				</form>
+				</div> <!-- End of edit_account -->
 
          </div> <!-- End of row -->
+
       </div> <!-- End of container -->
 	</body>
 </html>
